@@ -18,6 +18,7 @@ export default async ({ req, res, log, error }) => {
   if (req.path === "/") 
   { 
     const event = req.headers['x-appwrite-event'];
+    log(req);
     
     if(event === "users." + userId + ".create")
     {
