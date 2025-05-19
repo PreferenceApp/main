@@ -27,6 +27,34 @@ export default async ({ req, res, log, error }) => {
   {
       if(!req.body.userB)
       {
+         const getMyUserDoc = await db.getDocument('db', 'users', userId);
+
+        try 
+        {
+          if(getMyUserDoc.match)
+          {
+              const listTheirDoc = await db.listDocuments('db', 'users', 
+              [
+                Query.equal('userA', [getMyUserDoc.userB]),
+              ]);
+
+              if(listTheirDoc.documents.length > 0)
+              {
+                const getTheirUserDoc = listTheirDoc.documents[0];
+                const updateTheirDoc = await db.updateDocument('db', 'users', getTheirUserDoc.$id, { userA: getTheirUserDoc.userA, userB: getTheirUserDoc.userB, match: false }, [ Permission.read(Role.user(getTheirUserDoc.$id)) ]);
+              }
+  
+          }
+        }
+        catch (err)
+        {
+            error('Error unmatching with user:', err);
+        }
+        finally
+        {
+            const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);
+        }
+        
         return res.json({ status: "User not specified." });
       }
 
@@ -81,9 +109,12 @@ export default async ({ req, res, log, error }) => {
             [
               Query.equal('userA', [getMyUserDoc.userB]),
             ]);
-          
-            const getTheirUserDoc = listTheirDoc.documents[0];
-            const updateTheirDoc = await db.updateDocument('db', 'users', getTheirUserDoc.$id, { userA: getTheirUserDoc.userA, userB: getTheirUserDoc.userB, match: false }, [ Permission.read(Role.user(getTheirUserDoc.$id)) ]);
+
+            if(listTheirDoc.documents.length > 0)
+            {
+                const getTheirUserDoc = listTheirDoc.documents[0];
+                const updateTheirDoc = await db.updateDocument('db', 'users', getTheirUserDoc.$id, { userA: getTheirUserDoc.userA, userB: getTheirUserDoc.userB, match: false }, [ Permission.read(Role.user(getTheirUserDoc.$id)) ]);
+            }
         }
       }
       catch (err)
