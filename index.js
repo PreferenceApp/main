@@ -20,7 +20,7 @@ export default async ({ req, res, log, error }) => {
     const event = req.headers['x-appwrite-event'];
     if(event === "users." + userId + ".create")
     {
-      const createUserDoc = await db.createDocument('db', 'users', req.body.name, { user: null, match: false }, [ Permission.read(Role.user(userId)) ]);
+      const createUserDoc = await db.createDocument('db', 'users', userId, { userA: req.body.name, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);
       log(user);
     }
   }
