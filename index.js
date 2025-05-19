@@ -25,6 +25,7 @@ export default async ({ req, res, log, error }) => {
   }
   else if(req.path === "/like")
   {
+      log(req.body);
       if(!req.body.userB)
       {
          const getMyUserDoc = await db.getDocument('db', 'users', userId);
@@ -55,7 +56,7 @@ export default async ({ req, res, log, error }) => {
             const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);
         }
         
-        return res.json({ status: "User not specified." });
+        //return res.json({ status: "User not specified." });
       }
 
       const listTheirDoc = await db.listDocuments('db', 'users', 
