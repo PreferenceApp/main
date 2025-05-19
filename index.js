@@ -119,7 +119,7 @@ export default async ({ req, res, log, error }) => {
             if(listTheirDoc.documents.length > 0)
             {
                 const getTheirUserDoc = listTheirDoc.documents[0];
-                const updateTheirDoc = await db.updateDocument('db', 'users', getTheirUserDoc.$id, { userA: getTheirUserDoc.userA, userB: getTheirUserDoc.userB, match: false }, [ Permission.read(Role.user(getTheirUserDoc.$id)) ]);
+                const updateTheirDoc = await db.updateDocument('db', 'users', getTheirUserDoc.$id, { userA: getTheirUserDoc.userA, userB: null, match: false }, [ Permission.read(Role.user(getTheirUserDoc.$id)) ]);
             }
         }
       }
