@@ -26,8 +26,9 @@ export default async ({ req, res, log, error }) => {
   else if(req.path === "/like")
   {
       log(req.body);
-      log(req.body.userB);
-      if(!req.body.userB)
+      const userB = JSON.parse(req.body.userB);
+      log(userB);
+      if(!userB)
       {
          const getMyUserDoc = await db.getDocument('db', 'users', userId);
 
@@ -62,12 +63,12 @@ export default async ({ req, res, log, error }) => {
 
       const listTheirDoc = await db.listDocuments('db', 'users', 
       [
-        Query.equal('userA', [req.body.userB]),
+        Query.equal('userA', [userB]),
       ]);
 
       if(listTheirDoc.documents.length === 0)
       {
-        return res.json({ status: `${req.body.userB} isn't registered.` });
+        return res.json({ status: `${userB} isn't registered.` });
       }
 
       const getMyUserDoc = await db.getDocument('db', 'users', userId);
@@ -75,12 +76,12 @@ export default async ({ req, res, log, error }) => {
 
       if(getMyUserDoc.match)
       {
-          return res.json({ status: `You can't like ${req.body.userB} this week because you've already matched with ${getMyUserDoc.userB}. Try again next week!` });
+          return res.json({ status: `You can't like ${userB} this week because you've already matched with ${getMyUserDoc.userB}. Try again next week!` });
       }
 
       if(getTheirUserDoc.match)
       {
-          return res.json({ status: `You can't like ${req.body.userB} this week because they've already matched with someone else. Try again next week!` });
+          return res.json({ status: `You can't like ${userB} this week because they've already matched with someone else. Try again next week!` });
       }
     
       if(getTheirUserDoc.userB)
@@ -88,17 +89,17 @@ export default async ({ req, res, log, error }) => {
           if(getTheirUserDoc.userB === getMyUserDoc.userA)
           {
               //It's a match!
-              const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: req.body.userB, match: true }, [ Permission.read(Role.user(userId)) ]);
+              const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: userB, match: true }, [ Permission.read(Role.user(userId)) ]);
               const updateTheirDoc = await db.updateDocument('db', 'users', getTheirUserDoc.$id, { userA: getTheirUserDoc.userA, userB: getTheirUserDoc.userB, match: true }, [ Permission.read(Role.user(getTheirUserDoc.$id)) ]);
           }
           else
           {
-              const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: req.body.userB, match: false }, [ Permission.read(Role.user(userId)) ]);
+              const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: userB, match: false }, [ Permission.read(Role.user(userId)) ]);
           }
       }
       else
       {
-          const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: req.body.userB, match: false }, [ Permission.read(Role.user(userId)) ]);
+          const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: userB, match: false }, [ Permission.read(Role.user(userId)) ]);
       }
   }
   else if(req.path === "/delete")
