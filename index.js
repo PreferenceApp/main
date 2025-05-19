@@ -26,6 +26,7 @@ export default async ({ req, res, log, error }) => {
   else if(req.path === "/like")
   {
       log(req.body);
+      log(req.body.userB);
       if(!req.body.userB)
       {
          const getMyUserDoc = await db.getDocument('db', 'users', userId);
@@ -61,7 +62,7 @@ export default async ({ req, res, log, error }) => {
 
       const listTheirDoc = await db.listDocuments('db', 'users', 
       [
-        Query.equal('userA', [req.body.userB.toString()]),
+        Query.equal('userA', [req.body.userB]),
       ]);
 
       if(listTheirDoc.documents.length === 0)
