@@ -58,9 +58,10 @@ export default async ({ req, res, log, error }) => {
         finally
         {
             const updateUserDoc = await db.updateDocument('db', 'users', userId, { userA: getMyUserDoc.userA, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);
+        
         }
         
-        //return res.json({ status: "User not specified." });
+        return res.json({ status: `Successfully unliked everyone` });
       }
 
       const listTheirDoc = await db.listDocuments('db', 'users', 
