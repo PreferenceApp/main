@@ -15,13 +15,24 @@ export default async ({ req, res, log, error }) => {
 
   const user = await users.get(userId);
 
+  log(user);
+
   if (req.path === "/") 
   { 
     const event = req.headers['x-appwrite-event'];
     if(event === "users." + userId + ".create")
     {
-      const createUserDoc = await db.createDocument('db', 'users', userId, { userA: req.body.name, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);
+      const createUserDoc = await db.createDocument('db', 'users', userId, { userA: req.body.name, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);    
     }
+  }
+  else if(req.path === "/totals")
+  {
+      const listAllDocs = await db.listDocuments('db', 'users', [
+        Query.equal('userB', req.body.name),
+        Query.limit(0)
+      ]);
+
+      log(listAllDocs);
   }
   else if(req.path === "/like")
   {
