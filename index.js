@@ -23,7 +23,7 @@ export default async ({ req, res, log, error }) => {
     if(event === "users." + userId + ".create")
     {
       const myUsername = req.body.name;
-      const createUserDoc = await db.createDocument('db', 'users', userId, { userA: myUsername, userB: null }, [ Permission.read(Role.user(userId)) ]);
+      const createUserDoc = await db.createDocument('db', 'users', userId, { userA: myUsername, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);
     }
   }
   else if(req.path === "/delete")
