@@ -25,11 +25,8 @@ export default async ({ req, res, log, error }) => {
   }
   else if(req.path === "/like")
   {
-      log(req.body);
       const body = JSON.parse(req.body);
-      log(body);
       const userB = body.userB;
-      log(userB);
       if(!userB)
       {
          const getMyUserDoc = await db.getDocument('db', 'users', userId);
