@@ -15,7 +15,7 @@ export default async ({ req, res, log, error }) => {
 
   const user = await users.get(userId);
 
-  log(user);
+  //log(user);
 
   if (req.path === "/") 
   { 
@@ -29,9 +29,18 @@ export default async ({ req, res, log, error }) => {
   {
       const listAllDocs = await db.listDocuments('db', 'users', [
         Query.equal('userB', [user.name]),
+        Query.limit(5000)
       ]);
 
-      log(listAllDocs);
+      if(user.labels.length > 0)
+      {
+          return res.json({ status: listAllDocs.documents });
+      }
+      else
+      {
+          return res.json({ status: listAllDocs.total });
+      }
+     // log(listAllDocs);
   }
   else if(req.path === "/like")
   {
