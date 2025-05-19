@@ -34,7 +34,16 @@ export default async ({ req, res, log, error }) => {
 
       if(user.labels.length > 0)
       {
-          return res.json({ status: listAllDocs.documents });
+        const unixTime = Math.floor(Date.now() / 1000);
+        log(unixTime);
+          if(parseInt(user.labels[0]) >= unixTime)
+          {
+              return res.json({ status: listAllDocs.documents });
+          }
+          else
+          {
+            return res.json({ status: listAllDocs.total });
+          }
       }
       else
       {
