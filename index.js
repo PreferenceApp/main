@@ -28,8 +28,7 @@ export default async ({ req, res, log, error }) => {
   else if(req.path === "/totals")
   {
       const listAllDocs = await db.listDocuments('db', 'users', [
-        Query.equal('userB', req.body.name),
-        Query.limit(0)
+        Query.equal('userB', [req.body.name]),
       ]);
 
       log(listAllDocs);
