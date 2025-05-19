@@ -61,7 +61,7 @@ export default async ({ req, res, log, error }) => {
 
       const listTheirDoc = await db.listDocuments('db', 'users', 
       [
-        Query.equal('userA', [req.body.userB]),
+        Query.equal('userA', [req.body.userB.toString()]),
       ]);
 
       if(listTheirDoc.documents.length === 0)
