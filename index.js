@@ -15,8 +15,6 @@ export default async ({ req, res, log, error }) => {
 
   const user = await users.get(userId);
 
-  //log(user);
-
   if (req.path === "/") 
   { 
     const event = req.headers['x-appwrite-event'];
@@ -35,10 +33,7 @@ export default async ({ req, res, log, error }) => {
       {
           const createDiscordUserIdDoc = await db.createDocument('db', 'discordUserIds', userId, { discordUserId: req.body.providerUid }, [ Permission.read(Role.user(userId)) ]);    
       }
-
     }
-    log(event);
-    log(req.body);
   }
   else if(req.path === "/totals")
   {
