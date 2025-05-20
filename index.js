@@ -46,6 +46,10 @@ export default async ({ req, res, log, error }) => {
         try
         {
             const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
+            if(getDiscordUserDoc.discordUserId === null || getDiscordUserDoc.discordUsername === null)
+            {
+              const updateDiscordUserDoc = await db.updateDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
+            }
         }
         catch(err)
         {
