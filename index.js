@@ -18,12 +18,9 @@ export default async ({ req, res, log, error }) => {
   if (req.path === "/") 
   { 
     const event = req.headers['x-appwrite-event'];
-    if(event === "users." + userId + ".create")
-    {
-      const createDiscordUsernameDoc = await db.createDocument('db', 'discordUsernames', userId, { discordUsername: req.body.name }, [ Permission.read(Role.user(userId)) ]);    
-    }
     if(event === "users." + req.body.userId + ".sessions." + req.body.$id + ".create")
     {
+      let userData = null;
       try {
         const response = await fetch('https://discord.com/api/users/@me', {
           headers: {
@@ -36,7 +33,7 @@ export default async ({ req, res, log, error }) => {
           throw new Error(`Error fetching user: ${response.statusText}`);
         }
     
-        const userData = await response.json();
+        userData = await response.json();
 
         log(userData);
         
