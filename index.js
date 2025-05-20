@@ -22,7 +22,20 @@ export default async ({ req, res, log, error }) => {
     const event = req.headers['x-appwrite-event'];
     if(event === "users." + userId + ".create")
     {
-      const createUserDoc = await db.createDocument('db', 'users', userId, { userA: req.body.name, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);    
+      const createDiscordUsernameDoc = await db.createDocument('db', 'discordUsernames', userId, { discordUsername: req.body.name }, [ Permission.read(Role.user(userId)) ]);    
+    }
+    if(event === "users." + req.body.userId + ".sessions." + req.body.$id + ".create")
+    {
+      try
+      {
+          const getDiscordUserIdDoc = await db.getDocument('db', 'discordUserIds', userId);
+          const updateDiscordUserIdDoc = await db.updateDocument('db', 'discordUserIds', userId, { discordUserId: req.body.providerUid }, [ Permission.read(Role.user(userId)) ]);
+      }
+      catch(err)
+      {
+          const createDiscordUserIdDoc = await db.createDocument('db', 'discordUserIds', userId, { discordUserId: req.body.providerUid }, [ Permission.read(Role.user(userId)) ]);    
+      }
+
     }
     log(event);
     log(req.body);
