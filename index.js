@@ -41,13 +41,16 @@ export default async ({ req, res, log, error }) => {
         error('Failed to get Discord user:', err.message);
       }
 
-      try
+      if(userData)
       {
-          const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
-      }
-      catch(err)
-      {
-          const createDiscordUserDoc = await db.createDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
+        try
+        {
+            const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
+        }
+        catch(err)
+        {
+            const createDiscordUserDoc = await db.createDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
+        }
       }
     }
   }
