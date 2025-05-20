@@ -24,6 +24,8 @@ export default async ({ req, res, log, error }) => {
     {
       const createUserDoc = await db.createDocument('db', 'users', userId, { userA: req.body.name, userB: null, match: false }, [ Permission.read(Role.user(userId)) ]);    
     }
+    log(event);
+    log(req.body);
   }
   else if(req.path === "/totals")
   {
