@@ -24,14 +24,34 @@ export default async ({ req, res, log, error }) => {
     }
     if(event === "users." + req.body.userId + ".sessions." + req.body.$id + ".create")
     {
+      try {
+        const response = await fetch('https://discord.com/api/users/@me', {
+          headers: {
+            'Authorization': `Bearer ${req.body.providerAccessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Error fetching user: ${response.statusText}`);
+        }
+    
+        const userData = await response.json();
+
+        log(userData);
+        
+      } catch (err) {
+        error('Failed to get Discord user:', err.message);
+      }
+
       try
       {
-          const getDiscordUserIdDoc = await db.getDocument('db', 'discordUserIds', userId);
-          const updateDiscordUserIdDoc = await db.updateDocument('db', 'discordUserIds', userId, { discordUserId: req.body.providerUid }, [ Permission.read(Role.user(userId)) ]);
+          const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
+          const updateDiscordUserDoc = await db.updateDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
       }
       catch(err)
       {
-          const createDiscordUserIdDoc = await db.createDocument('db', 'discordUserIds', userId, { discordUserId: req.body.providerUid }, [ Permission.read(Role.user(userId)) ]);    
+          const updateDiscordUserDoc = await db.updateDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
       }
     }
   }
