@@ -57,7 +57,7 @@ export default async ({ req, res, log, error }) => {
         try
         {
             const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
-            if(getDiscordUserDoc.discordUserId === null || getDiscordUserDoc.discordUsername === null)
+            if(!getDiscordUserDoc.discordUserId || !getDiscordUserDoc.discordUsername)
             {
               const updateDiscordUserDoc = await db.updateDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
             }
@@ -90,11 +90,11 @@ export default async ({ req, res, log, error }) => {
 
         while(!done) 
         {
-          const response = await databases.listDocuments('db', 'matches', [ Query.limit(25), Query.equal('userA', [getDiscordUserDoc.discordUsername], Query.equal('match', true) ]);
+          const response = await db.listDocuments('db', 'matches', [ Query.limit(25), Query.equal('userA', [getDiscordUserDoc.discordUsername]), Query.equal('match', true) ]);
           const documents = response.documents;
     
           for(const document of documents) {
-            await databases.deleteDocument('db', 'matches', document.$id);
+            await db.deleteDocument('db', 'matches', document.$id);
           }
     
           if(documents.length === 0) {
@@ -108,6 +108,7 @@ export default async ({ req, res, log, error }) => {
       try {
         await db.deleteDocument('db', 'users', userId);
       } catch (err) {
+        //If documents doesn't exist, continue..., else halt by return a response
         error('Error deleting user document:', err);
       }
 
