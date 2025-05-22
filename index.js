@@ -22,7 +22,7 @@ export default async ({ req, res, log, error }) => {
     {
       try
       {
-        const createLastMessageSentDoc = await db.createDocument('db', 'lastMessageSent', userId, {discordUsername: userId }, [ Permission.read(Role.user(userId)) ]);
+        const createLastMessageSentDoc = await db.createDocument('db', 'lastMessageSent', userId, {discordUsername: userId }, [ Permission.read(Role.label('admin')) ]);
       }
       catch(err)
       {
