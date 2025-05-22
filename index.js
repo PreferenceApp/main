@@ -18,18 +18,7 @@ export default async ({ req, res, log, error }) => {
   if (req.path === "/") 
   { 
     const event = req.headers['x-appwrite-event'];
-    if(event === "users." + userId + ".create")
-    {
-      try
-      {
-        const createLastMessageSentDoc = await db.createDocument('db', 'lastMessageSent', userId, {discordUsername: userId }, [ Permission.read(Role.label('admin')) ]);
-      }
-      catch(err)
-      {
-        error(err);
-      }
-    }
-    else if(event === "users." + req.body.userId + ".sessions." + req.body.$id + ".create")
+    if(event === "users." + req.body.userId + ".sessions." + req.body.$id + ".create")
     {
       let userData = null;
       try {
@@ -112,12 +101,6 @@ export default async ({ req, res, log, error }) => {
         error('Error deleting user document:', err);
       }
 
-      try {
-        await db.deleteDocument('db', 'lastMessageSent', userId);
-      } catch (err) {
-        error('Error deleting lastMessageSent document:', err);
-      }
-    
       try {
         await users.delete(userId);
       } catch (err) {
