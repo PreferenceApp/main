@@ -90,6 +90,22 @@ export default async ({ req, res, log, error }) => {
             done = true;
           }
         }
+
+        done = false;
+
+        while(!done) 
+        {
+          const response = await db.listDocuments('db', 'matches', [ Query.limit(25), Query.equal('userB', [getDiscordUserDoc.discordUsername]), Query.equal('match', true) ]);
+          const documents = response.documents;
+    
+          for(const document of documents) {
+            await db.deleteDocument('db', 'matches', document.$id);
+          }
+    
+          if(documents.length === 0) {
+            done = true;
+          }
+        }
       } catch (err) {
          error('Error deleting all matches documents:', err);
       }
