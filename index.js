@@ -66,7 +66,7 @@ export default async ({ req, res, log, error }) => {
   {
     //can't be done client side
   }
-  else if(req.path === "/crushes")
+  else if(req.path === "/admirers")
   {
     //can't be done client side
   }
