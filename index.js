@@ -55,6 +55,7 @@ export default async ({ req, res, log, error }) => {
         }
         catch(err)
         {
+            error(err);
             log(err);
             const createDiscordUserDoc = await db.createDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
         }
