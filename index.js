@@ -57,6 +57,7 @@ export default async ({ req, res, log, error }) => {
         {
             error(err);
             log(err);
+          
             if(err === "Error: Document with the requested ID could not be found.")
             {
               const createDiscordUserDoc = await db.createDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
