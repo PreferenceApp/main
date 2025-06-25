@@ -72,54 +72,21 @@ export default async ({ req, res, log, error }) => {
   }
   else if(req.path === "/delete")
   {
-      try {
-        const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
-
-        let done = false;
-
-        while(!done) 
-        {
-          const response = await db.listDocuments('db', 'matches', [ Query.limit(25), Query.equal('userA', [getDiscordUserDoc.discordUsername]), Query.equal('match', true) ]);
-          const documents = response.documents;
-    
-          for(const document of documents) {
-            await db.deleteDocument('db', 'matches', document.$id);
-          }
-    
-          if(documents.length === 0) {
-            done = true;
-          }
-        }
-
-        done = false;
-
-        while(!done) 
-        {
-          const response = await db.listDocuments('db', 'matches', [ Query.limit(25), Query.equal('userB', [getDiscordUserDoc.discordUsername]), Query.equal('match', true) ]);
-          const documents = response.documents;
-    
-          for(const document of documents) {
-            await db.deleteDocument('db', 'matches', document.$id);
-          }
-    
-          if(documents.length === 0) {
-            done = true;
-          }
-        }
-      } catch (err) {
-         error('Error deleting all matches documents:', err);
-      }
-
-      try {
-        await db.deleteDocument('db', 'users', userId);
-      } catch (err) {
-        //If documents doesn't exist, continue..., else halt by return a response
+      try 
+      {
+        await db.deleteDocument('db', 'discordUsers', userId);
+      } 
+      catch (err) 
+      {
         error('Error deleting user document:', err);
       }
 
-      try {
+      try 
+      {
         await users.delete(userId);
-      } catch (err) {
+      } 
+      catch (err) 
+      {
         error('Error deleting user account:', err);
       }
   }
