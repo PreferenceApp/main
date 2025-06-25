@@ -46,13 +46,16 @@ export default async ({ req, res, log, error }) => {
         try
         {
             const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
-            if(!getDiscordUserDoc.discordUserId || !getDiscordUserDoc.discordUsername)
+            //Not sure why I would need to update these values since they all stay the same. Perhaps if I'm concerned about the last time the user logged in I could check
+            //when it was last updated, but if the value stays the same, does it update?
+            /*if(!getDiscordUserDoc.discordUserId || !getDiscordUserDoc.discordUsername)
             {
               const updateDiscordUserDoc = await db.updateDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
-            }
+            }*/
         }
         catch(err)
         {
+            log(err);
             const createDiscordUserDoc = await db.createDocument('db', 'discordUsers', userId, { discordUserId: req.body.providerUid, discordUsername: userData.username }, [ Permission.read(Role.user(userId)) ]);
         }
       }
