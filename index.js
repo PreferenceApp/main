@@ -66,18 +66,6 @@ export default async ({ req, res, log, error }) => {
       }
     }
   }
-  else if(req.path === "/like")
-  {
-    //can't be done client side
-  }
-  else if(req.path === "/unlike")
-  {
-    //can't be done client side
-  }
-  else if(req.path === "/admirers")
-  {
-    //can't be done client side
-  }
   else if(req.path === "/delete")
   {
       try 
