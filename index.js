@@ -57,6 +57,19 @@ export default async ({ req, res, log, error }) => {
       }
     }
   }
+  else if(req.path === "/free")
+  {
+    try
+    {
+      const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
+	    const whoLikesMe = await db.listDocuments('db', 'likes', [ Query.equal('userB', getDiscordUserDoc.discordUsername), Query.limit(5000), Query.orderDesc('$createdAt') ]);
+      return res.json(whoLikesMe.documents);
+    }
+    catch(err)
+    {
+        error('Error getting free preview:', err);
+    }
+  }
   else if(req.path === "/delete")
   {
       try 
