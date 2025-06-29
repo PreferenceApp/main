@@ -63,7 +63,7 @@ export default async ({ req, res, log, error }) => {
     {
       const getDiscordUserDoc = await db.getDocument('db', 'discordUsers', userId);
       const whoLikesMe = await db.listDocuments('db', 'likes', [ Query.equal('userB', getDiscordUserDoc.discordUsername), Query.limit(5000), Query.orderDesc('$createdAt') ]);
-      const createDiscordUserDoc = await db.createDocument('db', 'subscriptions', getDiscordUserDoc.$id, { username: getDiscordUserDoc.discordUsername}, [ Permission.read(Role.user(getDiscordUserDoc.$id)) ]);
+      const createSubscriptionDoc = await db.createDocument('db', 'subscriptions', getDiscordUserDoc.$id, { username: getDiscordUserDoc.discordUsername}, [ Permission.read(Role.user(getDiscordUserDoc.$id)) ]);
       return res.json(whoLikesMe.documents);
     }
     catch(err)
