@@ -68,33 +68,38 @@ export default async ({ req, res, log, error }) => {
           body.providerAccessToken
         );
 
-        // Create player row
+        const transaction = await tablesDB.createTransaction({
+          databaseId: "db",
+        });
+        
         await tablesDB.createRow({
           databaseId: "db",
           tableId: "players",
           rowId: userId,
+          transactionId: transaction.$id,
           data: {
             playerName: discordUser.username,
           },
-          permissions: [
-            Permission.read(Role.user(userId)),
-            Permission.update(Role.user(userId))
-          ],
         });
-
-        // Create leaderboard row
+        
         await tablesDB.createRow({
           databaseId: "db",
           tableId: "playerleaderboard",
           rowId: userId,
+          transactionId: transaction.$id,
           data: {
-            players: userId, // relationship
+            players: userId,
             totalPlayerPlacementPoints: 0,
             totalPlayerKOPoints: 0,
             totalPlayerDamagePoints: 0,
             totalPlayerDamageRaw: 0,
             gamesPlayed: 0,
           },
+        });
+        
+        await tablesDB.commitTransaction({
+          databaseId: "db",
+          transactionId: transaction.$id,
         });
 
         // Update Appwrite user's display name
