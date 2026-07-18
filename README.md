@@ -1,0 +1,1 @@
+A simple starter function. Edit `index.js` to get started
