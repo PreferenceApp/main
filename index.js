@@ -78,7 +78,7 @@ export default async ({ req, res, log, error }) => {
           },
           permissions: [
             Permission.read(Role.user(userId)),
-            Permission.write(Role.user(userId)),
+            Permission.update(Role.user(userId))
           ],
         });
 
