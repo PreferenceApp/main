@@ -80,6 +80,10 @@ export default async ({ req, res, log, error }) => {
           data: {
             playerName: discordUser.username,
           },
+          permissions: [
+            Permission.read(Role.user(userId)),
+            Permission.update(Role.user(userId)),
+          ],
         });
         
         await tablesDB.createRow({
@@ -100,12 +104,6 @@ export default async ({ req, res, log, error }) => {
         await tablesDB.commitTransaction({
           databaseId: "db",
           transactionId: transaction.$id,
-        });
-
-        // Update Appwrite user's display name
-        await users.updateName({
-          userId,
-          name: discordUser.username,
         });
 
         log(`Created player ${discordUser.username} (${userId})`);
