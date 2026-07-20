@@ -82,8 +82,6 @@ export default async ({ req, res, log, error }) => {
         } catch (err) {
           error(err);
         }
-
-        log(`Created player: ${_playerName} with userId: (${userId}) for discordId: (${discordUser.id})`);
       } catch (err) {
         error(err);
       }
