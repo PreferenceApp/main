@@ -1,4 +1,4 @@
-import { Client, TablesDB, Users, Permission, Role } from 'node-appwrite';
+import { Client, TablesDB, Users, Permission, Role, Query } from 'node-appwrite';
 
 export default async ({ req, res, log, error }) => {
   const userId = req.headers['x-appwrite-user-id'] || '';
