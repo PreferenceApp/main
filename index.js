@@ -40,48 +40,50 @@ export default async ({ req, res, log, error }) => {
       event === `users.${userId}.sessions.${body.$id}.create`
     ) {
       try {
-        // Check if the player already exists
         let playerExists = true;
 
         try {
-          await tablesDB.getRow({
+          const playersWithId = await tablesDB.listRows({
             databaseId: "db",
             tableId: "players",
-            rowId: userId,
+            queries: [ Query.equal("userId", userId), Query.limit(1) ]
+          });
+
+          // Fetch Discord user information
+          const discordUser = await getDiscordUser(
+            body.providerAccessToken
+          );
+  
+          log(discordUser);
+          
+          let _playerName = "";
+          if(playersWithId.total === 0)
+          {
+            _playerName = discordUser.username;
+          }
+          else
+          {
+            _playerName = playersWithId.rows[0].playerName;
+          }
+          
+          await tablesDB.upsertRow({
+            databaseId: "db",
+            tableId: "players",
+            rowId: discordUser.id,
+            data: {
+              playerName: _playerName,
+              userId: userId,
+            },
+            permissions: [
+              Permission.read(Role.user(userId)),
+              Permission.update(Role.user(userId)),
+            ],
           });
         } catch (err) {
-          if (err.code === 404) {
-            playerExists = false;
-          } else {
-            throw err;
-          }
+          error(err);
         }
 
-        // If the player already exists, do nothing
-        if (playerExists) {
-          log(`Player ${userId} already exists.`);
-          return res.json({ status: "complete" });
-        }
-
-        // Fetch Discord user information
-        const discordUser = await getDiscordUser(
-          body.providerAccessToken
-        );
-
-        await tablesDB.createRow({
-          databaseId: "db",
-          tableId: "players",
-          rowId: userId,
-          data: {
-            playerName: discordUser.username,
-          },
-          permissions: [
-            Permission.read(Role.user(userId)),
-            Permission.update(Role.user(userId)),
-          ],
-        });
-
-        log(`Created player ${discordUser.username} (${userId})`);
+        log(`Created player: ${_playerName} with userId: (${userId}) for discordId: (${discordUser.id})`);
       } catch (err) {
         error(err);
       }
