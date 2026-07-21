@@ -54,14 +54,12 @@ export default async ({ req, res, log, error }) => {
         if (!existingRow) {
           // New User Initialization
           newData = {
-            userId: userId,
             playerName: discordUser.global_name,
           };
         } else {
           // Returning User: Map existing data to prevent losing other columns
           newData = {
             ...existingRow, // Keeps all other database columns intact
-            userId: userId // Updates Appwrite userId if it changed
           };
         }
         
