@@ -27,61 +27,57 @@ export default async ({ req, res, log, error }) => {
     return await response.json();
   }
 
-  const body = typeof req.body === 'string'
-    ? JSON.parse(req.body)
-    : req.body;
-
-  log(body);
+  const body = typeof req.body === 'string' ? JSON.parse(req.body): req.body;
 
   if (req.path === "/") {
     const event = req.headers["x-appwrite-event"];
-
-    if (
-      event === `users.${userId}.sessions.${body.$id}.create`
-    ) {
-      try {
-        let playerExists = true;
-
-        try {
-          const playersWithId = await tablesDB.listRows({
-            databaseId: "db",
-            tableId: "players",
-            queries: [ Query.equal("userId", userId), Query.limit(1) ]
-          });
-
-          // Fetch Discord user information
-          const discordUser = await getDiscordUser(
-            body.providerAccessToken
-          );
   
-          log(discordUser);
-          
-          let _playerName = "";
-          if(playersWithId.total === 0)
-          {
-            _playerName = discordUser.username;
-          }
-          else
-          {
-            _playerName = playersWithId.rows[0].playerName;
-          }
-          
-          await tablesDB.upsertRow({
+    if (event === `users.${userId}.sessions.${body.$id}.create`) {
+      try {
+        // 1. Fetch Discord details first to get the correct rowId (discordUser.id)
+        const discordUser = await getDiscordUser(body.providerAccessToken);
+        
+        // 2. Fetch by rowId directly instead of an attribute query for maximum speed
+        let existingRow = null;
+        try {
+          existingRow = await tablesDB.getRow({
             databaseId: "db",
             tableId: "players",
-            rowId: discordUser.id,
-            data: {
-              playerName: _playerName,
-              userId: userId,
-            },
-            permissions: [
-              Permission.read(Role.user(userId)),
-              Permission.update(Role.user(userId)),
-            ],
+            rowId: discordUser.id
           });
-        } catch (err) {
-          error(err);
+        } catch (e) {
+          // Row doesn't exist yet, which is expected for new users
         }
+  
+        let newData = {};
+  
+        if (!existingRow) {
+          // New User Initialization
+          newData = {
+            userId: userId,
+            playerName: discordUser.global_name,
+          };
+        } else {
+          // Returning User: Map existing data to prevent losing other columns
+          newData = {
+            ...existingRow, // Keeps all other database columns intact
+            userId: userId // Updates Appwrite userId if it changed
+          };
+        }
+        
+        // 3. Save or update the record
+        await tablesDB.upsertRow({
+          databaseId: "db",
+          tableId: "players",
+          rowId: discordUser.id,
+          data: newData,
+          permissions: [
+            Permission.read(Role.user(userId)),
+            Permission.update(Role.user(userId)),
+          ],
+        });
+
+        //could upload discordUser.avatar to avatars
       } catch (err) {
         error(err);
       }
